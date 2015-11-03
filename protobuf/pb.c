@@ -29,7 +29,11 @@
 #ifdef _ALLBSD_SOURCE
 #include <machine/endian.h>
 #else
+#ifndef WIN32
 #include <endian.h>
+#else
+#pragma comment(lib,"lua5.1.lib")
+#endif
 #endif
 
 #if __BYTE_ORDER == __LITTLE_ENDIAN
@@ -340,8 +344,9 @@ static int struct_unpack(lua_State *L)
     const uint8_t* buffer = (uint8_t*)luaL_checklstring(L, 2, &len);
     size_t pos = luaL_checkinteger(L, 3);
 
+	uint8_t out[8];
     buffer += pos;
-    uint8_t out[8];
+    
     switch(format){
         case 'i':
             {
@@ -462,7 +467,7 @@ static const struct luaL_reg _c_iostring_m [] = {
     {NULL, NULL}
 };
 
-int luaopen_pb (lua_State *L)
+__declspec(dllexport) int luaopen_pb (lua_State *L)
 {
     luaL_newmetatable(L, IOSTRING_META);
     lua_pushvalue(L, -1);
